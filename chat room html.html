@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Merged Chat Room</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    /* 🌐 HEADER */
+    header {
+      background-color: #2c3e50;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 1rem;
+      position: relative;
+    }
+
+    .logo {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .menu-toggle {
+      font-size: 1.5rem;
+      background: none;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .menu-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 1rem;
+      background: white;
+      color: black;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .menu-dropdown a {
+      display: block;
+      padding: 10px 15px;
+      text-decoration: none;
+      color: #333;
+    }
+
+    .menu-dropdown a:hover {
+      background-color: #f1f1f1;
+    }
+
+    /* 💬 CHAT HEADER */
+    .chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #34495e;
+      color: white;
+      padding: 0.7rem 1rem;
+    }
+
+    .back-lobby {
+      cursor: pointer;
+    }
+
+    .active-users {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .active-users-list {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 30px;
+      background: white;
+      color: black;
+      width: 180px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+    }
+
+    .active-users-list div {
+      padding: 8px 12px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .active-users-list div:hover {
+      background-color: #f1f1f1;
+    }
+
+    .user-options {
+      display: none;
+      position: absolute;
+      left: 105%;
+      top: 0;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 5px;
+      z-index: 999;
+    }
+
+    .user-options button {
+      display: block;
+      padding: 5px 10px;
+      width: 100%;
+      background: none;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    /* 🧾 Chat container */
+    .chat-container {
+      padding: 1rem;
+    }
+
+    .message {
+      background: white;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .react-button {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      display: none;
+    }
+
+    .reaction-options {
+      display: none;
+      position: absolute;
+      top: 30px;
+      right: 10px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 5px;
+      font-size: 20px;
+    }
+
+    .reaction-options span {
+      cursor: pointer;
+      padding: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🌐 HEADER with menu -->
+  <header>
+    <div class="logo">💬 MyChatApp</div>
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    <div class="menu-dropdown" id="menu">
+      <a href="#">Home</a>
+      <a href="#">Profile</a>
+      <a href="#">Settings</a>
+      <a href="#">Logout</a>
+    </div>
+  </header>
+
+  <!-- 💬 Chat Header -->
+  <div class="chat-header">
+    <div class="back-lobby" onclick="alert('Going back to lobby')">🔙 Lobby</div>
+    <div class="active-users" onclick="toggleUsers()">
+      👥 Active: <span id="user-count">3</span>
+      <div class="active-users-list" id="userList">
+        <div onclick="showUserOptions(this)">User123
+          <div class="user-options">
+            <button onclick="alert('Reported')">🚫 Report</button>
+            <button onclick="alert('Muted')">🔇 Mute</button>
+          </div>
+        </div>
+        <div onclick="showUserOptions(this)">User456
+          <div class="user-options">
+            <button onclick="alert('Reported')">🚫 Report</button>
+            <button onclick="alert('Muted')">🔇 Mute</button>
+          </div>
+        </div>
+        <div onclick="showUserOptions(this)">User789
+          <div class="user-options">
+            <button onclick="alert('Reported')">🚫 Report</button>
+            <button onclick="alert('Muted')">🔇 Mute</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📥 Chat Messages -->
+  <div class="chat-container">
+    <div class="message" onclick="showReact(this)">
+      Hello! This is a message.
+      <div class="react-button">#</div>
+      <div class="reaction-options">
+        <span onclick="react(this)">😂</span>
+        <span onclick="react(this)">❤️</span>
+        <span onclick="react(this)">👍</span>
+        <span onclick="react(this)">🔥</span>
+        <span onclick="react(this)">😮</span>
+      </div>
+    </div>
+
+    <div class="message" onclick="showReact(this)">
+      Another message here.
+      <div class="react-button">0</div>
+      <div class="reaction-options">
+        <span onclick="react(this)">😂</span>
+        <span onclick="react(this)">❤️</span>
+        <span onclick="react(this)">👍</span>
+        <span onclick="react(this)">🔥</span>
+        <span onclick="react(this)">😮</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⚙️ Script -->
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById("menu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    function toggleUsers() {
+      const list = document.getElementById("userList");
+      list.style.display = list.style.display === "block" ? "none" : "block";
+    }
+
+    function showUserOptions(userDiv) {
+      const all = document.querySelectorAll(".user-options");
+      all.forEach(opt => opt.style.display = "none");
+      const opt = userDiv.querySelector(".user-options");
+      opt.style.display = "block";
+      event.stopPropagation();
+    }
+
+    function showReact(msgDiv) {
+      const btn = msgDiv.querySelector(".react-button");
+      btn.style.display = btn.style.display === "block" ? "none" : "block";
+    }
+
+    document.addEventListener("click", function(event) {
+      document.querySelectorAll(".user-options").forEach(opt => opt.style.display = "none");
+      document.querySelectorAll(".reaction-options").forEach(opt => opt.style.display = "none");
+    });
+
+    document.querySelectorAll(".react-button").forEach(btn => {
+      btn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        const reactions = this.nextElementSibling;
+        reactions.style.display = reactions.style.display === "block" ? "none" : "block";
+      });
+    });
+
+    function react(emoji) {
+      alert("Reacted with: " + emoji.innerText);
+    }
+  </script>
+
+</body>
+</html>
